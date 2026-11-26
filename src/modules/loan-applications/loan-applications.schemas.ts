@@ -54,7 +54,7 @@ export const loanApplicationRequestSchema = z.object({
   employmentStatus: z.enum(EMPLOYMENT_STATUSES, { error: 'Selecciona tu situación laboral.' }),
   monthlyIncome: z.number({ error: 'Ingresa tus ingresos mensuales.' }).finite().min(0, 'Los ingresos no pueden ser negativos.').max(1_000_000),
   monthlyExpenses: z.number().finite().min(0, 'Los gastos no pueden ser negativos.').max(1_000_000).nullable(),
-  iban: z.string({ error: 'Ingresa tu IBAN.' }).trim().replace(/\s/g, '').toUpperCase().refine(validSpanishIban, 'Ingresa un IBAN español válido.'),
+  iban: z.string({ error: 'Ingresa tu IBAN.' }).trim().toUpperCase().transform((value) => value.replace(/\s/g, '')).refine(validSpanishIban, 'Ingresa un IBAN español válido.'),
   privacyTermsAccepted: z.literal(true, { error: 'Acepta la privacidad y los términos.' }),
   creditCheckAccepted: z.literal(true, { error: 'Autoriza la consulta crediticia.' }),
   marketingAccepted: z.boolean({ error: 'Indica si aceptas las comunicaciones comerciales.' }),
