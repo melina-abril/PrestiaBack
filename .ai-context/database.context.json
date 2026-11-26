@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "layer": "database",
   "kind": "features",
-  "generatedAt": "2026-11-26T19:02:51.590Z",
+  "generatedAt": "2026-11-26T19:17:15.536Z",
   "system": {
     "uid": "Ki3EmRCSLkGwM3Tnlji0",
     "name": "Credara · Comparador de préstamos online"
@@ -59,6 +59,52 @@
     }
   ],
   "modules": [
+    {
+      "moduleName": "blog",
+      "title": "Artículos del blog",
+      "featureKeys": [
+        "3f98e247-aa9c-4c28-a1c0-7297215ad3c6"
+      ],
+      "services": [],
+      "tables": [
+        "articulos"
+      ]
+    },
+    {
+      "moduleName": "contact",
+      "title": "Mensajes de contacto",
+      "featureKeys": [
+        "e2a6e7df-16ad-4208-8912-5ed74acaa685"
+      ],
+      "services": [],
+      "tables": [
+        "mensajesContacto"
+      ]
+    },
+    {
+      "moduleName": "test-de-prestamos",
+      "title": "Test de préstamos",
+      "featureKeys": [
+        "9430a42b-576b-44ad-b307-0084f1052076"
+      ],
+      "services": []
+    },
+    {
+      "moduleName": "calculadora-tae-y-tabla-de-costes",
+      "title": "Calculadora TAE y tabla de costes",
+      "featureKeys": [
+        "c1ead5a7-5b0d-497d-86fc-f3a21b2ca604"
+      ],
+      "services": []
+    },
+    {
+      "moduleName": "como-funciona",
+      "title": "Cómo funciona",
+      "featureKeys": [
+        "bea88d52-82ec-4cc7-9667-e46ebce712dc"
+      ],
+      "services": []
+    },
     {
       "moduleName": "home",
       "title": "Inicio con simulador y ofertas destacadas",
@@ -123,6 +169,16 @@
     ],
     "tables": [
       {
+        "name": "articulos",
+        "moduleName": "blog",
+        "columns": null
+      },
+      {
+        "name": "mensajesContacto",
+        "moduleName": "contact",
+        "columns": null
+      },
+      {
         "name": "loanRequests",
         "moduleName": "loan-requests",
         "columns": null
@@ -145,7 +201,7 @@
   },
   "relations": [
     "Backend: la base es firestore (en desarrollo, emulador en 127.0.0.1:8085, proyecto demo-app); conéctate con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST, GCLOUD_PROJECT.",
-    "Backend: usa EXACTAMENTE estas tablas y columnas (database.tables), sin crear el esquema desde el ORM: loanRequests, loanTypes, lenders."
+    "Backend: usa EXACTAMENTE estas tablas y columnas (database.tables), sin crear el esquema desde el ORM: articulos, mensajesContacto, loanRequests, loanTypes, lenders."
   ],
-  "readme": "# Credara · Base de datos\n\nCloud Firestore en modo nativo. El backend accede mediante el SDK de administración; el frontend no se conecta directamente a Firestore. Las reglas impiden el acceso directo de clientes a todos los documentos.\n\n## Requisitos\n\nNode.js 24 o superior, npm y, para el emulador, una instalación de Java compatible con Firebase Emulator Suite.\n\n## Desarrollo local\n\n```sh\nnpm install\nnpm run emulator\n```\n\nEn otra terminal, carga los scripts versionados:\n\n```sh\nnpm run seed:emulator\n```\n\nEl emulador de Firestore escucha en `127.0.0.1:8085` y su panel está en el puerto `4005`. El runner aplica los scripts de `firestore/seeds` por versión y registra cada aplicación en `_seedHistory`. Para revisar los scripts sin cargarlos, ejecuta `npm run check`. También puedes probar la carga en un emulador temporal con `npm run test:seeds`.\n\n## Colecciones y orden de carga\n\n| Script | Colecciones | Uso |\n|---|---|---|\n| `V1__core.js` | `lenders` | Entidades compartidas por el inicio, el comparador, las solicitudes y las páginas de tipos de préstamo |\n| `V4__loan_requests.js` | `loanRequests` | Solicitudes de ofertas |\n| `V6__loan_types.js` | `loanTypes` | Páginas de tipos de préstamo |\n\nLos módulos `home`, `loan-simulator` y `lenders` no crean colecciones propias. Consulta `docs/collections/` para el esquema de cada colección. No modifiques un script que ya se haya aplicado: los cambios se incorporan en una versión nueva.\n\nNo hay índices compuestos declarados: las consultas especificadas hasta ahora no requieren ninguno. Firestore crea automáticamente los índices de campo único. Si se incorpora una consulta que filtre por un campo y ordene por otro, agrega su índice compuesto a `firestore.indexes.json`.\n\n## Conexión con las otras capas\n\nEl backend escucha en el puerto `8080` y se conecta a esta base con `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085` durante el desarrollo local. Configura esas mismas variables en el entorno del backend; su `.env.example` ya está en el repositorio y no se reemplaza aquí. El frontend escucha en el puerto `4200` y llama al backend mediante `/api`, sin acceder directamente a Firestore. La base no requiere cuentas de visitantes ni almacena contraseñas.\n\n## Proyecto real\n\nConfigura `FIREBASE_PROJECT_ID` con el identificador de tu proyecto y `GOOGLE_APPLICATION_CREDENTIALS` con la ruta a un archivo de credenciales mantenido fuera del repositorio. No configures `FIRESTORE_EMULATOR_HOST` al cargar datos en un proyecto real. Después ejecuta:\n\n```sh\nnpm run seed\nnpm run deploy:firestore\n```\n\nEl segundo comando despliega `firestore.rules` y `firestore.indexes.json`. Verifica el proyecto de destino antes de cargar datos o desplegar reglas.\n"
+  "readme": "# Base de datos de Credara\n\nCloud Firestore almacena los datos del comparador público. El backend accede mediante Firebase Admin; el frontend no se conecta directamente a Firestore. Las reglas deniegan el acceso directo desde clientes.\n\n## Desarrollo local\n\nRequiere Node.js 24 o superior. Instala las dependencias y abre el emulador de Firestore:\n\n```sh\nnpm install\nnpm run emulator\n```\n\nEl emulador escucha en `127.0.0.1:8085` y su panel en el puerto `4005`. En otra terminal, aplica los scripts de carga versionados:\n\n```sh\nnpm run seed:emulator\n```\n\nEl runner aplica los scripts de `firestore/seeds` en orden de versión y registra los aplicados en `_seedHistory`. También puedes comprobar los scripts con `npm run check`.\n\n| Script | Módulo | Colecciones |\n|---|---|---|\n| `V1__core.js` | Compartido | `lenders` |\n| `V4__loan_requests.js` | Solicitud de ofertas | `loanRequests` |\n| `V6__loan_types.js` | Tipos de préstamo | `loanTypes` |\n| `V7__blog.js` | Blog | `articulos` |\n| `V8__contact.js` | Contacto | `mensajesContacto` |\n\nLos módulos de inicio, simulador, comparador, test de préstamos, calculadora TAE y cómo funciona no crean colecciones propias. Consulta `docs/collections` para conocer los campos y las referencias de cada colección.\n\n## Conexión con las otras capas\n\nPara conectar el backend local al emulador, configura `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085` en su entorno. Su API pública escucha en el puerto `8080` con prefijo `/api`; el frontend escucha en `4200` y dirige `/api` a ese puerto. El backend permite el origen del frontend mediante `FRONT_URL=http://localhost:4200`. El frontend no necesita credenciales ni conexión a Firestore.\n\n## Proyecto de Firebase\n\nPara cargar datos en un proyecto real, configura `FIREBASE_PROJECT_ID` y `GOOGLE_APPLICATION_CREDENTIALS` con un proyecto y unas credenciales proporcionados por su administrador. Ejecuta `npm run seed` para cargar los datos. Revisa la configuración del proyecto de Firebase antes de ejecutar `npm run deploy:firestore` para desplegar las reglas y los índices. No utilices las credenciales del proyecto real con el emulador.\n"
 }

@@ -1,49 +1,38 @@
-# Credara · Base de datos
+# Base de datos de Credara
 
-Cloud Firestore en modo nativo. El backend accede mediante el SDK de administración; el frontend no se conecta directamente a Firestore. Las reglas impiden el acceso directo de clientes a todos los documentos.
-
-## Requisitos
-
-Node.js 24 o superior, npm y, para el emulador, una instalación de Java compatible con Firebase Emulator Suite.
+Cloud Firestore almacena los datos del comparador público. El backend accede mediante Firebase Admin; el frontend no se conecta directamente a Firestore. Las reglas deniegan el acceso directo desde clientes.
 
 ## Desarrollo local
+
+Requiere Node.js 24 o superior. Instala las dependencias y abre el emulador de Firestore:
 
 ```sh
 npm install
 npm run emulator
 ```
 
-En otra terminal, carga los scripts versionados:
+El emulador escucha en `127.0.0.1:8085` y su panel en el puerto `4005`. En otra terminal, aplica los scripts de carga versionados:
 
 ```sh
 npm run seed:emulator
 ```
 
-El emulador de Firestore escucha en `127.0.0.1:8085` y su panel está en el puerto `4005`. El runner aplica los scripts de `firestore/seeds` por versión y registra cada aplicación en `_seedHistory`. Para revisar los scripts sin cargarlos, ejecuta `npm run check`. También puedes probar la carga en un emulador temporal con `npm run test:seeds`.
+El runner aplica los scripts de `firestore/seeds` en orden de versión y registra los aplicados en `_seedHistory`. También puedes comprobar los scripts con `npm run check`.
 
-## Colecciones y orden de carga
-
-| Script | Colecciones | Uso |
+| Script | Módulo | Colecciones |
 |---|---|---|
-| `V1__core.js` | `lenders` | Entidades compartidas por el inicio, el comparador, las solicitudes y las páginas de tipos de préstamo |
-| `V4__loan_requests.js` | `loanRequests` | Solicitudes de ofertas |
-| `V6__loan_types.js` | `loanTypes` | Páginas de tipos de préstamo |
+| `V1__core.js` | Compartido | `lenders` |
+| `V4__loan_requests.js` | Solicitud de ofertas | `loanRequests` |
+| `V6__loan_types.js` | Tipos de préstamo | `loanTypes` |
+| `V7__blog.js` | Blog | `articulos` |
+| `V8__contact.js` | Contacto | `mensajesContacto` |
 
-Los módulos `home`, `loan-simulator` y `lenders` no crean colecciones propias. Consulta `docs/collections/` para el esquema de cada colección. No modifiques un script que ya se haya aplicado: los cambios se incorporan en una versión nueva.
-
-No hay índices compuestos declarados: las consultas especificadas hasta ahora no requieren ninguno. Firestore crea automáticamente los índices de campo único. Si se incorpora una consulta que filtre por un campo y ordene por otro, agrega su índice compuesto a `firestore.indexes.json`.
+Los módulos de inicio, simulador, comparador, test de préstamos, calculadora TAE y cómo funciona no crean colecciones propias. Consulta `docs/collections` para conocer los campos y las referencias de cada colección.
 
 ## Conexión con las otras capas
 
-El backend escucha en el puerto `8080` y se conecta a esta base con `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085` durante el desarrollo local. Configura esas mismas variables en el entorno del backend; su `.env.example` ya está en el repositorio y no se reemplaza aquí. El frontend escucha en el puerto `4200` y llama al backend mediante `/api`, sin acceder directamente a Firestore. La base no requiere cuentas de visitantes ni almacena contraseñas.
+Para conectar el backend local al emulador, configura `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085` en su entorno. Su API pública escucha en el puerto `8080` con prefijo `/api`; el frontend escucha en `4200` y dirige `/api` a ese puerto. El backend permite el origen del frontend mediante `FRONT_URL=http://localhost:4200`. El frontend no necesita credenciales ni conexión a Firestore.
 
-## Proyecto real
+## Proyecto de Firebase
 
-Configura `FIREBASE_PROJECT_ID` con el identificador de tu proyecto y `GOOGLE_APPLICATION_CREDENTIALS` con la ruta a un archivo de credenciales mantenido fuera del repositorio. No configures `FIRESTORE_EMULATOR_HOST` al cargar datos en un proyecto real. Después ejecuta:
-
-```sh
-npm run seed
-npm run deploy:firestore
-```
-
-El segundo comando despliega `firestore.rules` y `firestore.indexes.json`. Verifica el proyecto de destino antes de cargar datos o desplegar reglas.
+Para cargar datos en un proyecto real, configura `FIREBASE_PROJECT_ID` y `GOOGLE_APPLICATION_CREDENTIALS` con un proyecto y unas credenciales proporcionados por su administrador. Ejecuta `npm run seed` para cargar los datos. Revisa la configuración del proyecto de Firebase antes de ejecutar `npm run deploy:firestore` para desplegar las reglas y los índices. No utilices las credenciales del proyecto real con el emulador.
