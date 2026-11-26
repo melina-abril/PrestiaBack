@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "layer": "database",
+  "kind": "structure",
+  "generatedAt": "2026-11-26T18:55:38.263Z",
+  "system": {
+    "uid": "Ki3EmRCSLkGwM3Tnlji0",
+    "name": "Credara · Comparador de préstamos online"
+  },
+  "architecture": {
+    "name": "Cloud Firestore · scripts de carga",
+    "stack": "firestore"
+  },
+  "repositoryPath": "https://github.com/melina-abril/PrestiaBack",
+  "ports": [
+    {
+      "port": 8085,
+      "file": "firebase.json"
+    }
+  ],
+  "environment": [
+    {
+      "name": "ADMIN_PASSWORD",
+      "example": "",
+      "files": [
+        "scripts/create-admin.js"
+      ]
+    },
+    {
+      "name": "FIREBASE_PROJECT_ID",
+      "example": "",
+      "files": [
+        "scripts/create-admin.js",
+        "scripts/seed.js"
+      ]
+    },
+    {
+      "name": "FIRESTORE_EMULATOR_HOST",
+      "example": "",
+      "files": [
+        "scripts/create-admin.js",
+        "scripts/seed.js"
+      ]
+    },
+    {
+      "name": "GCLOUD_PROJECT",
+      "example": "",
+      "files": [
+        "scripts/create-admin.js",
+        "scripts/seed.js"
+      ]
+    },
+    {
+      "name": "MIN_PASSWORD_LENGTH",
+      "example": "",
+      "files": [
+        "scripts/create-admin.js"
+      ]
+    }
+  ],
+  "modules": [],
+  "shared": [],
+  "database": {
+    "engine": "firestore",
+    "containers": [],
+    "connectionEnvVars": [
+      "FIREBASE_PROJECT_ID",
+      "FIRESTORE_EMULATOR_HOST",
+      "GCLOUD_PROJECT"
+    ],
+    "tables": [],
+    "firebase": {
+      "projectId": "demo-app",
+      "emulatorHost": "127.0.0.1:8085"
+    }
+  },
+  "relations": [
+    "Backend: la base es firestore (en desarrollo, emulador en 127.0.0.1:8085, proyecto demo-app); conéctate con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST, GCLOUD_PROJECT."
+  ],
+  "readme": "# Credara · Base de datos\n\nBase Cloud Firestore en modo nativo. Esta estructura inicial no incluye colecciones, datos de ejemplo ni índices compuestos; se incorporarán con las funcionalidades.\n\n## Requisitos\n\n- Node.js 24 o superior y npm.\n- Java para ejecutar el emulador de Firestore.\n\n## Desarrollo local\n\n```sh\nnpm install\nnpm run emulator\n```\n\nEn otra terminal, carga los scripts versionados disponibles:\n\n```sh\nnpm run seed:emulator\n```\n\nEl emulador de Firestore escucha en `127.0.0.1:8085` y su panel está en el puerto `4005`. El runner aplica los scripts de `firestore/seeds` en orden de versión y registra cuáles ha aplicado. En esta estructura inicial todavía no hay scripts que aplicar.\n\n## Proyecto de Firebase\n\nPara cargar datos en un proyecto real, configura `GOOGLE_APPLICATION_CREDENTIALS` con la ruta de un archivo de credenciales proporcionado por el responsable del proyecto y `FIREBASE_PROJECT_ID` con el identificador del proyecto. Después ejecuta:\n\n```sh\nnpm run seed\nnpm run deploy:firestore\n```\n\nRevisa el proyecto de destino antes del despliegue. Las reglas actuales deniegan todo acceso directo de clientes a Firestore; el backend utiliza el SDK de administración. No incluyas archivos de credenciales en el repositorio.\n\n## Colecciones y scripts\n\n| Origen | Colecciones |\n|---|---|\n| Estructura inicial | Ninguna |\n\nLos módulos posteriores documentarán sus colecciones en `docs/collections/` y añadirán scripts versionados a `firestore/seeds/`. No modifiques scripts que ya se hayan aplicado.\n"
+}
