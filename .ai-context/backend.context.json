@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "layer": "backend",
   "kind": "features",
-  "generatedAt": "2026-11-26T19:06:11.391Z",
+  "generatedAt": "2026-11-26T19:18:28.657Z",
   "system": {
     "uid": "Ki3EmRCSLkGwM3Tnlji0",
     "name": "Credara · Comparador de préstamos online"
@@ -68,6 +68,42 @@
     }
   ],
   "modules": [
+    {
+      "moduleName": "blog",
+      "title": "Artículos del blog",
+      "featureKeys": [
+        "3f98e247-aa9c-4c28-a1c0-7297215ad3c6"
+      ],
+      "services": [
+        {
+          "method": "GET",
+          "path": "/api/articulos",
+          "name": "listArticles",
+          "description": "Devuelve los artículos publicados hasta hoy, filtrados por categoría y ordenados por fecha descendente, de a 9 por página, con el total de artículos y páginas."
+        },
+        {
+          "method": "GET",
+          "path": "/api/articulos/:slug",
+          "name": "getArticle",
+          "description": "Devuelve el artículo publicado completo, con sus secciones HTML depuradas y sus artículos relacionados publicados; responde 404 si no está disponible."
+        }
+      ]
+    },
+    {
+      "moduleName": "contact",
+      "title": "Mensajes de contacto",
+      "featureKeys": [
+        "e2a6e7df-16ad-4208-8912-5ed74acaa685"
+      ],
+      "services": [
+        {
+          "method": "POST",
+          "path": "/api/contacto",
+          "name": "createContactMessage",
+          "description": "Valida el formulario y el campo antispam, aplica el límite de tres envíos por IP y hora, guarda el mensaje válido y responde 201; después intenta avisar al correo configurado."
+        }
+      ]
+    },
     {
       "moduleName": "loan-requests",
       "title": "Solicitud de ofertas",
@@ -139,6 +175,27 @@
     "basePath": "/api",
     "endpoints": [
       {
+        "moduleName": "blog",
+        "method": "GET",
+        "path": "/api/articulos",
+        "name": "listArticles",
+        "description": "Devuelve los artículos publicados hasta hoy, filtrados por categoría y ordenados por fecha descendente, de a 9 por página, con el total de artículos y páginas."
+      },
+      {
+        "moduleName": "blog",
+        "method": "GET",
+        "path": "/api/articulos/:slug",
+        "name": "getArticle",
+        "description": "Devuelve el artículo publicado completo, con sus secciones HTML depuradas y sus artículos relacionados publicados; responde 404 si no está disponible."
+      },
+      {
+        "moduleName": "contact",
+        "method": "POST",
+        "path": "/api/contacto",
+        "name": "createContactMessage",
+        "description": "Valida el formulario y el campo antispam, aplica el límite de tres envíos por IP y hora, guarda el mensaje válido y responde 201; después intenta avisar al correo configurado."
+      },
+      {
         "moduleName": "loan-requests",
         "method": "POST",
         "path": "/api/loan-requests",
@@ -199,7 +256,7 @@
     ]
   },
   "relations": [
-    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 7 endpoints de backend.endpoints con el mismo method y path.",
+    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 10 endpoints de backend.endpoints con el mismo method y path.",
     "Frontend: el backend habilita CORS con las variables FRONT_URL; el origen del front tiene que estar ahí.",
     "Base de datos: el backend se conecta con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST (mismos nombres en el .env.example de la base)."
   ],
