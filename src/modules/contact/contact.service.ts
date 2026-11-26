@@ -16,7 +16,7 @@ export const contactService = {
   async create(request: ContactRequest, ipAddress: string): Promise<ContactResponse> {
     const recent = await contactRepository.countRecentByIp(ipAddress, Date.now() - ONE_HOUR_MS);
     if (recent >= HOURLY_LIMIT) {
-      throw new HttpError(429, 'Has alcanzado el límite de tres mensajes por hora. Inténtalo más tarde.');
+      throw new HttpError(429, 'RATE_LIMIT', 'Has alcanzado el límite de tres mensajes por hora. Inténtalo más tarde.');
     }
 
     await contactRepository.insert(newId(), {
