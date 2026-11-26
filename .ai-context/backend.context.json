@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "layer": "backend",
-  "kind": "structure",
-  "generatedAt": "2026-11-26T18:57:22.020Z",
+  "kind": "features",
+  "generatedAt": "2026-11-26T19:06:11.391Z",
   "system": {
     "uid": "Ki3EmRCSLkGwM3Tnlji0",
     "name": "Credara · Comparador de préstamos online"
@@ -67,11 +67,119 @@
       ]
     }
   ],
-  "modules": [],
+  "modules": [
+    {
+      "moduleName": "loan-requests",
+      "title": "Solicitud de ofertas",
+      "featureKeys": [
+        "822a6f75-6c23-4e09-83ab-ad757c8118a9",
+        "8f98d026-a93d-4a16-84ba-626054c8d919"
+      ],
+      "services": [
+        {
+          "method": "POST",
+          "path": "/api/loan-requests",
+          "name": "createLoanRequest",
+          "description": "Valida los datos y consentimientos, aplica el límite por IP y la clave de idempotencia, guarda la solicitud y devuelve su id con estado 201."
+        },
+        {
+          "method": "GET",
+          "path": "/api/loan-requests/:id/offers",
+          "name": "getLoanRequestOffers",
+          "description": "Filtra entidades compatibles con la solicitud, calcula y ordena las ofertas sin exponer URL de afiliado y guarda el resultado y su estado; devuelve 404 si no existe."
+        },
+        {
+          "method": "POST",
+          "path": "/api/loan-requests/:id/clicks",
+          "name": "recordOfferClick",
+          "description": "Comprueba que la entidad figure entre las ofertas guardadas, registra cada clic y devuelve la URL de destino con parámetros de seguimiento."
+        }
+      ]
+    },
+    {
+      "moduleName": "lenders",
+      "title": "Comparador de entidades",
+      "featureKeys": [
+        "a13a918c-de55-4974-8692-27eef72380bd",
+        "67edb12e-1b4f-4e83-865a-0d8b712487c1"
+      ],
+      "services": [
+        {
+          "method": "GET",
+          "path": "/api/lenders",
+          "name": "listLenders",
+          "description": "Devuelve entidades activas con filtros opcionales de importe, plazo, edad y condiciones, y orden solicitado. Con featured=true devuelve hasta tres destacadas ignorando los demás filtros; valida los parámetros y nunca incluye affiliateUrl."
+        }
+      ]
+    },
+    {
+      "moduleName": "loan-types",
+      "title": "Páginas de tipos de préstamo",
+      "featureKeys": [
+        "98ad01a1-aa1d-4d92-8771-cacee72cd586"
+      ],
+      "services": [
+        {
+          "method": "GET",
+          "path": "/api/loan-types",
+          "name": "listLoanTypes",
+          "description": "Devuelve los tipos de préstamo activos ordenados por su campo order, con slug, title, icon y summary."
+        },
+        {
+          "method": "GET",
+          "path": "/api/loan-types/:slug",
+          "name": "getLoanType",
+          "description": "Devuelve el contenido completo del tipo activo, sus tipos relacionados activos y las entidades activas que cumplen su criterio, sin affiliateUrl; responde 404 si el slug no existe o está inactivo."
+        }
+      ]
+    }
+  ],
   "shared": [],
   "backend": {
     "basePath": "/api",
     "endpoints": [
+      {
+        "moduleName": "loan-requests",
+        "method": "POST",
+        "path": "/api/loan-requests",
+        "name": "createLoanRequest",
+        "description": "Valida los datos y consentimientos, aplica el límite por IP y la clave de idempotencia, guarda la solicitud y devuelve su id con estado 201."
+      },
+      {
+        "moduleName": "loan-requests",
+        "method": "GET",
+        "path": "/api/loan-requests/:id/offers",
+        "name": "getLoanRequestOffers",
+        "description": "Filtra entidades compatibles con la solicitud, calcula y ordena las ofertas sin exponer URL de afiliado y guarda el resultado y su estado; devuelve 404 si no existe."
+      },
+      {
+        "moduleName": "loan-requests",
+        "method": "POST",
+        "path": "/api/loan-requests/:id/clicks",
+        "name": "recordOfferClick",
+        "description": "Comprueba que la entidad figure entre las ofertas guardadas, registra cada clic y devuelve la URL de destino con parámetros de seguimiento."
+      },
+      {
+        "moduleName": "lenders",
+        "method": "GET",
+        "path": "/api/lenders",
+        "name": "listLenders",
+        "description": "Devuelve entidades activas con filtros opcionales de importe, plazo, edad y condiciones, y orden solicitado. Con featured=true devuelve hasta tres destacadas ignorando los demás filtros; valida los parámetros y nunca incluye affiliateUrl."
+      },
+      {
+        "moduleName": "loan-types",
+        "method": "GET",
+        "path": "/api/loan-types",
+        "name": "listLoanTypes",
+        "description": "Devuelve los tipos de préstamo activos ordenados por su campo order, con slug, title, icon y summary."
+      },
+      {
+        "moduleName": "loan-types",
+        "method": "GET",
+        "path": "/api/loan-types/:slug",
+        "name": "getLoanType",
+        "description": "Devuelve el contenido completo del tipo activo, sus tipos relacionados activos y las entidades activas que cumplen su criterio, sin affiliateUrl; responde 404 si el slug no existe o está inactivo."
+      },
       {
         "moduleName": "",
         "method": "GET",
@@ -91,9 +199,9 @@
     ]
   },
   "relations": [
-    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 1 endpoints de backend.endpoints con el mismo method y path.",
+    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 7 endpoints de backend.endpoints con el mismo method y path.",
     "Frontend: el backend habilita CORS con las variables FRONT_URL; el origen del front tiene que estar ahí.",
     "Base de datos: el backend se conecta con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST (mismos nombres en el .env.example de la base)."
   ],
-  "readme": "# Credara · API\n\nEstructura inicial de la API pública. `GET /api/health` está disponible; todavía no hay módulos ni otros endpoints. El archivo `src/routes.ts` está listo para registrar sus routers cuando se generen las funcionalidades.\n\n## Requisitos\n\n- Node.js 24 o superior y npm.\n- La base Cloud Firestore de este repositorio en funcionamiento. Consulta el `README.md` de la capa database para arrancar su emulador.\n\n## Desarrollo\n\n```sh\nnpm install\nnpm run dev\n```\n\nLa API escucha en el puerto 8080 por defecto. Para comprobar la compilación y ejecutar la versión compilada:\n\n```sh\nnpm run build\nnpm start\n```\n\n## Configuración\n\nConsulta el `.env.example` existente para las variables que leen `src/config/env.ts` y `src/config/database.ts`. Para desarrollo local, la base utiliza el proyecto de ejemplo `demo-app` y el emulador de Firestore en `127.0.0.1:8085`. Configura `FIREBASE_PROJECT_ID`, `GCLOUD_PROJECT` y `FIRESTORE_EMULATOR_HOST` según la configuración de esa capa. No incluyas archivos de credenciales en el repositorio.\n\nLa API se conecta a Firestore mediante la configuración existente en `src/config/database.ts`; el esquema y los datos de ejemplo corresponden a la capa database. Esta API es pública y no requiere inicio de sesión.\n"
+  "readme": "# Credara · API\n\nAPI pública de Credara en Node.js 24, Express 5 y TypeScript. No requiere cuenta ni inicio de sesión. Este archivo documenta el backend por separado: `README.md` pertenece a la capa de base de datos en este repositorio.\n\n## Desarrollo\n\nRequiere Node.js 24 o superior y Cloud Firestore. Para usar el emulador local, levanta y carga la base siguiendo `README.md`; escucha en `127.0.0.1:8085` y utiliza el proyecto `demo-app`.\n\n```sh\nnpm install\nnpm run dev\n```\n\nLa API escucha en el puerto `8080` por defecto. Para compilar y arrancar el código compilado:\n\n```sh\nnpm run build\nnpm start\n```\n\n## Configuración\n\nCopia `.env.example` a `.env` y ajusta sus valores para el entorno. `PORT` permite cambiar el puerto de la API; el proxy del frontend espera `8080`. `FRONT_URL` configura el origen permitido para el frontend, que en desarrollo escucha en `http://localhost:4200`. Para la base local, configura `FIREBASE_PROJECT_ID=demo-app`, `GCLOUD_PROJECT=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085`. Fuera del emulador, configura el proyecto y las credenciales de Google Cloud según las instrucciones de la base. El backend no crea colecciones ni carga datos: usa las colecciones existentes `lenders`, `loanRequests` y `loanTypes`.\n\n## Endpoints públicos\n\n- `GET /api/health`: estado de la API.\n- `POST /api/loan-requests`: crea una solicitud de ofertas.\n- `GET /api/loan-requests/:id/offers`: obtiene las ofertas de una solicitud.\n- `POST /api/loan-requests/:id/clicks`: registra la elección de una entidad y devuelve el destino.\n- `GET /api/lenders`: lista y filtra entidades; admite ofertas destacadas.\n- `GET /api/loan-types`: lista los tipos de préstamo activos.\n- `GET /api/loan-types/:slug`: obtiene el detalle de un tipo.\n\n## Conexión entre capas\n\nEl frontend Angular escucha en `4200` y envía `/api` mediante su proxy a `http://localhost:8080`; configura `FRONT_URL` para permitir ese origen. La API accede a Firestore mediante el SDK de administración: en desarrollo usa el emulador en `127.0.0.1:8085`. El frontend no se conecta directamente a la base. Consulta `README.md` para levantar el emulador y cargar sus datos.\n"
 }
