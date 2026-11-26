@@ -1,28 +1,39 @@
-# Credara · API
+# API de Credara
 
-Estructura inicial de la API pública. `GET /api/health` está disponible; todavía no hay módulos ni otros endpoints. El archivo `src/routes.ts` está listo para registrar sus routers cuando se generen las funcionalidades.
+API pública de comparación de préstamos. No requiere cuentas ni inicio de sesión. Este README está en `docs/backend/` porque el `README.md` de la raíz pertenece a la capa de base de datos del mismo repositorio.
 
-## Requisitos
+## Requisitos y desarrollo
 
-- Node.js 24 o superior y npm.
-- La base Cloud Firestore de este repositorio en funcionamiento. Consulta el `README.md` de la capa database para arrancar su emulador.
+Requiere Node.js 24 o superior y el emulador de Firestore de la capa de base de datos. Consulta el README de la raíz para iniciarlo y cargar sus datos de ejemplo.
 
-## Desarrollo
+Configura las variables de entorno mediante el `.env.example` del backend: `PORT=8080`, `FRONT_URL=http://localhost:4200`, `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085`. En el emulador, `GCLOUD_PROJECT` debe identificar el mismo proyecto si se configura. No uses credenciales reales en los archivos del repositorio.
 
 ```sh
 npm install
 npm run dev
 ```
 
-La API escucha en el puerto 8080 por defecto. Para comprobar la compilación y ejecutar la versión compilada:
+Para compilar y ejecutar el servidor compilado:
 
 ```sh
 npm run build
 npm start
 ```
 
-## Configuración
+La API escucha en el puerto `8080` y expone `GET /api/health`.
 
-Consulta el `.env.example` existente para las variables que leen `src/config/env.ts` y `src/config/database.ts`. Para desarrollo local, la base utiliza el proyecto de ejemplo `demo-app` y el emulador de Firestore en `127.0.0.1:8085`. Configura `FIREBASE_PROJECT_ID`, `GCLOUD_PROJECT` y `FIRESTORE_EMULATOR_HOST` según la configuración de esa capa. No incluyas archivos de credenciales en el repositorio.
+## Endpoints públicos
 
-La API se conecta a Firestore mediante la configuración existente en `src/config/database.ts`; el esquema y los datos de ejemplo corresponden a la capa database. Esta API es pública y no requiere inicio de sesión.
+| Módulo | Endpoints |
+| --- | --- |
+| Blog | `GET /api/articulos`, `GET /api/articulos/:slug` |
+| Contacto | `POST /api/contacto` |
+| Solicitudes de ofertas | `POST /api/loan-requests`, `GET /api/loan-requests/:id/offers`, `POST /api/loan-requests/:id/clicks` |
+| Comparador de entidades | `GET /api/lenders` |
+| Tipos de préstamo | `GET /api/loan-types`, `GET /api/loan-types/:slug` |
+
+El test de préstamos, la calculadora TAE y la página «Cómo funciona» no requieren endpoints: funcionan en el frontend.
+
+## Conexión con las otras capas
+
+El frontend se sirve en `http://localhost:4200` y dirige `/api` a `http://localhost:8080`; configura `FRONT_URL=http://localhost:4200` para permitir ese origen. El backend se conecta a Firestore mediante `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085`. Las colecciones `articulos`, `mensajesContacto`, `loanRequests`, `loanTypes` y `lenders`, sus índices y sus datos de ejemplo pertenecen a la capa de base de datos; el backend no los crea.
