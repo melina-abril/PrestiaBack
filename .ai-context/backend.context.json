@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "layer": "backend",
+  "kind": "structure",
+  "generatedAt": "2026-11-26T18:57:22.020Z",
+  "system": {
+    "uid": "Ki3EmRCSLkGwM3Tnlji0",
+    "name": "Credara · Comparador de préstamos online"
+  },
+  "architecture": {
+    "name": "Node.js 24 · Express 5 con base de datos",
+    "stack": "node-express"
+  },
+  "repositoryPath": "https://github.com/melina-abril/PrestiaBack",
+  "ports": [
+    {
+      "port": 8080,
+      "file": ".env.example"
+    }
+  ],
+  "environment": [
+    {
+      "name": "FIREBASE_PROJECT_ID",
+      "example": "demo-app",
+      "files": [
+        ".env.example",
+        "src/config/database.ts"
+      ]
+    },
+    {
+      "name": "FIRESTORE_EMULATOR_HOST",
+      "example": "127.0.0.1:8085",
+      "files": [
+        ".env.example",
+        "src/config/database.ts"
+      ]
+    },
+    {
+      "name": "FRONT_URL",
+      "example": "http://localhost:4200",
+      "files": [
+        ".env.example",
+        "src/config/env.ts"
+      ]
+    },
+    {
+      "name": "JWT_SECRET",
+      "example": "",
+      "files": [
+        ".env.example"
+      ]
+    },
+    {
+      "name": "NODE_ENV",
+      "example": "development",
+      "files": [
+        ".env.example",
+        "src/config/env.ts"
+      ]
+    },
+    {
+      "name": "PORT",
+      "example": "8080",
+      "files": [
+        ".env.example",
+        "src/config/env.ts"
+      ]
+    }
+  ],
+  "modules": [],
+  "shared": [],
+  "backend": {
+    "basePath": "/api",
+    "endpoints": [
+      {
+        "moduleName": "",
+        "method": "GET",
+        "path": "/api/health",
+        "name": "health",
+        "description": "Archivo fijo o compartido: src/app.ts"
+      }
+    ],
+    "authEndpoints": [],
+    "entityTables": [],
+    "corsEnvVars": [
+      "FRONT_URL"
+    ],
+    "databaseEnvVars": [
+      "FIREBASE_PROJECT_ID",
+      "FIRESTORE_EMULATOR_HOST"
+    ]
+  },
+  "relations": [
+    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 1 endpoints de backend.endpoints con el mismo method y path.",
+    "Frontend: el backend habilita CORS con las variables FRONT_URL; el origen del front tiene que estar ahí.",
+    "Base de datos: el backend se conecta con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST (mismos nombres en el .env.example de la base)."
+  ],
+  "readme": "# Credara · API\n\nEstructura inicial de la API pública. `GET /api/health` está disponible; todavía no hay módulos ni otros endpoints. El archivo `src/routes.ts` está listo para registrar sus routers cuando se generen las funcionalidades.\n\n## Requisitos\n\n- Node.js 24 o superior y npm.\n- La base Cloud Firestore de este repositorio en funcionamiento. Consulta el `README.md` de la capa database para arrancar su emulador.\n\n## Desarrollo\n\n```sh\nnpm install\nnpm run dev\n```\n\nLa API escucha en el puerto 8080 por defecto. Para comprobar la compilación y ejecutar la versión compilada:\n\n```sh\nnpm run build\nnpm start\n```\n\n## Configuración\n\nConsulta el `.env.example` existente para las variables que leen `src/config/env.ts` y `src/config/database.ts`. Para desarrollo local, la base utiliza el proyecto de ejemplo `demo-app` y el emulador de Firestore en `127.0.0.1:8085`. Configura `FIREBASE_PROJECT_ID`, `GCLOUD_PROJECT` y `FIRESTORE_EMULATOR_HOST` según la configuración de esa capa. No incluyas archivos de credenciales en el repositorio.\n\nLa API se conecta a Firestore mediante la configuración existente en `src/config/database.ts`; el esquema y los datos de ejemplo corresponden a la capa database. Esta API es pública y no requiere inicio de sesión.\n"
+}
