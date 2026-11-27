@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "layer": "backend",
   "kind": "features",
-  "generatedAt": "2026-11-27T13:57:11.024Z",
+  "generatedAt": "2026-11-27T14:02:26.396Z",
   "system": {
     "uid": "Ki3EmRCSLkGwM3Tnlji0",
     "name": "Credara · Comparador de préstamos online"
@@ -19,6 +19,13 @@
     }
   ],
   "environment": [
+    {
+      "name": "CONTACT_INBOX",
+      "example": "",
+      "files": [
+        "src/modules/contact/contact.service.ts"
+      ]
+    },
     {
       "name": "FIREBASE_PROJECT_ID",
       "example": "demo-app",
@@ -68,6 +75,21 @@
     }
   ],
   "modules": [
+    {
+      "moduleName": "contact",
+      "title": "Mensajes de contacto",
+      "featureKeys": [
+        "e2a6e7df-16ad-4208-8912-5ed74acaa685"
+      ],
+      "services": [
+        {
+          "method": "POST",
+          "path": "/api/contacto",
+          "name": "createContactMessage",
+          "description": "Recibe y valida un mensaje de contacto; responde 201 al aceptarlo, 400 por campos inválidos y 429 al superar tres envíos por IP en una hora. Si web tiene contenido, responde 201 sin guardarlo."
+        }
+      ]
+    },
     {
       "moduleName": "blog",
       "title": "Blog de finanzas personales",
@@ -159,6 +181,13 @@
     "basePath": "/api",
     "endpoints": [
       {
+        "moduleName": "contact",
+        "method": "POST",
+        "path": "/api/contacto",
+        "name": "createContactMessage",
+        "description": "Recibe y valida un mensaje de contacto; responde 201 al aceptarlo, 400 por campos inválidos y 429 al superar tres envíos por IP en una hora. Si web tiene contenido, responde 201 sin guardarlo."
+      },
+      {
         "moduleName": "blog",
         "method": "GET",
         "path": "/api/articles",
@@ -236,7 +265,7 @@
     ]
   },
   "relations": [
-    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 9 endpoints de backend.endpoints con el mismo method y path.",
+    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 10 endpoints de backend.endpoints con el mismo method y path.",
     "Frontend: el backend habilita CORS con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST, FRONT_URL, PORT; el origen del front tiene que estar ahí.",
     "Base de datos: el backend se conecta con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST (mismos nombres en el .env.example de la base)."
   ],
