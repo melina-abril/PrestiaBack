@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "layer": "database",
   "kind": "features",
-  "generatedAt": "2026-11-27T13:16:05.889Z",
+  "generatedAt": "2026-11-27T13:17:49.292Z",
   "system": {
     "uid": "Ki3EmRCSLkGwM3Tnlji0",
     "name": "Credara · Comparador de préstamos online"
@@ -59,6 +59,14 @@
     }
   ],
   "modules": [
+    {
+      "moduleName": "sobre-nosotros-y-textos-legales",
+      "title": "Sobre nosotros y textos legales",
+      "featureKeys": [
+        "a889f121-4fec-46c8-bba3-d74b19fa00a3"
+      ],
+      "services": []
+    },
     {
       "moduleName": "blog",
       "title": "Blog de finanzas personales",
@@ -203,5 +211,5 @@
     "Backend: la base es firestore (en desarrollo, emulador en 127.0.0.1:8085, proyecto demo-app); conéctate con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST, GCLOUD_PROJECT.",
     "Backend: usa EXACTAMENTE estas tablas y columnas (database.tables), sin crear el esquema desde el ORM: articles, contactMessages, applications, loanTypes, lenders."
   ],
-  "readme": "# Credara · Base de datos\n\nBase de datos Cloud Firestore de Credara. Los scripts versionados cargan datos de ejemplo y el runner registra los scripts aplicados en `_seedHistory`. El acceso público al sitio no implica acceso directo a Firestore: las reglas cierran todas las lecturas y escrituras de clientes; el backend utiliza el SDK de administración.\n\n## Desarrollo local\n\nRequiere Node.js 24 o superior. Instala las dependencias e inicia el emulador de Firestore en `127.0.0.1:8085`; el panel está en el puerto `4005`:\n\n```sh\nnpm install\nnpm run emulator\n```\n\nEn otra terminal, carga los datos de ejemplo:\n\n```sh\nnpm run seed:emulator\n```\n\nTambién puedes comprobar los scripts con `npm run check`. No modifiques un script que ya se haya aplicado: los cambios de datos se incorporan en un script con una versión posterior.\n\n## Colecciones y orden de carga\n\n| Script | Módulo | Colecciones |\n|---|---|---|\n| `V1__core.js` | Core compartido | `lenders` |\n| `V4__loan_applications.js` | Solicitud de ofertas | `applications` |\n| `V6__loan_types.js` | Tipos de préstamo | `loanTypes` |\n| `V7__blog.js` | Blog | `articles` |\n| `V8__contact.js` | Contacto | `contactMessages` |\n\nEl inicio, el simulador avanzado, el comparador de entidades, el test de préstamos, la calculadora TAE y la página «Cómo funciona» no crean colecciones propias. Los esquemas de las colecciones cargadas están en `docs/collections/`.\n\n## Conexión con las otras capas\n\nEl backend HTTP escucha en el puerto `8080` y se conecta al emulador con `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085`; su documentación también indica configurar `GCLOUD_PROJECT=demo-app`. El frontend escucha en el puerto `4200` y llama al backend bajo `/api`; no accede directamente a Firestore.\n\n## Proyecto de Firebase\n\nPara cargar datos fuera del emulador, configura `FIREBASE_PROJECT_ID` y `GOOGLE_APPLICATION_CREDENTIALS` para el proyecto correspondiente y ejecuta `npm run seed`. Verifica el proyecto de destino antes de hacerlo. Despliega las reglas y los índices con:\n\n```sh\nnpm run deploy:firestore\n```\n\n`firestore.indexes.json` no declara índices compuestos: no hay consultas compuestas especificadas en esta generación. Los índices de campo único los administra Firestore.\n"
+  "readme": "# Credara · Cloud Firestore\n\nBase de datos de Credara en Cloud Firestore. El backend accede mediante el SDK de administración; las reglas de acceso directo a Firestore están cerradas. Este repositorio no requiere cuentas para usar el sitio.\n\n## Requisitos y desarrollo local\n\nRequiere Node.js 24 o superior. Instala las dependencias y arranca el emulador de Firestore:\n\n```sh\nnpm install\nnpm run emulator\n```\n\nEl emulador escucha en `127.0.0.1:8085` y su panel está disponible en el puerto `4005`. En otra terminal, aplica los scripts de carga versionados:\n\n```sh\nnpm run seed:emulator\n```\n\nEl runner aplica los archivos de `firestore/seeds` por versión y registra los aplicados en `_seedHistory`. Para comprobar los scripts sin aplicarlos, usa `npm run check`.\n\n## Scripts y colecciones\n\n| Script | Colecciones |\n|---|---|\n| `V1__core.js` | `lenders` |\n| `V4__loan_applications.js` | `applications` |\n| `V6__loan_types.js` | `loanTypes` |\n| `V7__blog.js` | `articles` |\n| `V8__contact.js` | `contactMessages` |\n\nLos módulos Sobre nosotros y textos legales, Test de préstamos, Calculadora TAE, Cómo funciona, Inicio, Simulador avanzado y Comparador de entidades no crean colecciones propias. Los esquemas de las colecciones creadas están en `docs/collections/`.\n\n## Proyecto real\n\nConfigura `FIREBASE_PROJECT_ID` y las credenciales mediante `GOOGLE_APPLICATION_CREDENTIALS` fuera del repositorio. Después ejecuta:\n\n```sh\nnpm run seed\nnpm run deploy:firestore\n```\n\nSustituye las direcciones de afiliación de ejemplo antes de operar. No incluyas credenciales en los scripts de carga.\n\n## Conexión con las otras capas\n\nEl backend usa `FIREBASE_PROJECT_ID` y `FIRESTORE_EMULATOR_HOST` para conectarse a Firestore. En desarrollo, utiliza `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085`; el backend escucha en el puerto `8080`. El frontend escucha en el puerto `4200`, llama al backend bajo `/api` y no accede directamente a Firestore.\n"
 }
