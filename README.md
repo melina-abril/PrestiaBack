@@ -1,46 +1,47 @@
-# Credara · Base de datos
+# Credara · Cloud Firestore
 
-Base de datos Cloud Firestore de Credara. Los scripts versionados cargan datos de ejemplo y el runner registra los scripts aplicados en `_seedHistory`. El acceso público al sitio no implica acceso directo a Firestore: las reglas cierran todas las lecturas y escrituras de clientes; el backend utiliza el SDK de administración.
+Base de datos de Credara en Cloud Firestore. El backend accede mediante el SDK de administración; las reglas de acceso directo a Firestore están cerradas. Este repositorio no requiere cuentas para usar el sitio.
 
-## Desarrollo local
+## Requisitos y desarrollo local
 
-Requiere Node.js 24 o superior. Instala las dependencias e inicia el emulador de Firestore en `127.0.0.1:8085`; el panel está en el puerto `4005`:
+Requiere Node.js 24 o superior. Instala las dependencias y arranca el emulador de Firestore:
 
 ```sh
 npm install
 npm run emulator
 ```
 
-En otra terminal, carga los datos de ejemplo:
+El emulador escucha en `127.0.0.1:8085` y su panel está disponible en el puerto `4005`. En otra terminal, aplica los scripts de carga versionados:
 
 ```sh
 npm run seed:emulator
 ```
 
-También puedes comprobar los scripts con `npm run check`. No modifiques un script que ya se haya aplicado: los cambios de datos se incorporan en un script con una versión posterior.
+El runner aplica los archivos de `firestore/seeds` por versión y registra los aplicados en `_seedHistory`. Para comprobar los scripts sin aplicarlos, usa `npm run check`.
 
-## Colecciones y orden de carga
+## Scripts y colecciones
 
-| Script | Módulo | Colecciones |
-|---|---|---|
-| `V1__core.js` | Core compartido | `lenders` |
-| `V4__loan_applications.js` | Solicitud de ofertas | `applications` |
-| `V6__loan_types.js` | Tipos de préstamo | `loanTypes` |
-| `V7__blog.js` | Blog | `articles` |
-| `V8__contact.js` | Contacto | `contactMessages` |
+| Script | Colecciones |
+|---|---|
+| `V1__core.js` | `lenders` |
+| `V4__loan_applications.js` | `applications` |
+| `V6__loan_types.js` | `loanTypes` |
+| `V7__blog.js` | `articles` |
+| `V8__contact.js` | `contactMessages` |
 
-El inicio, el simulador avanzado, el comparador de entidades, el test de préstamos, la calculadora TAE y la página «Cómo funciona» no crean colecciones propias. Los esquemas de las colecciones cargadas están en `docs/collections/`.
+Los módulos Sobre nosotros y textos legales, Test de préstamos, Calculadora TAE, Cómo funciona, Inicio, Simulador avanzado y Comparador de entidades no crean colecciones propias. Los esquemas de las colecciones creadas están en `docs/collections/`.
 
-## Conexión con las otras capas
+## Proyecto real
 
-El backend HTTP escucha en el puerto `8080` y se conecta al emulador con `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085`; su documentación también indica configurar `GCLOUD_PROJECT=demo-app`. El frontend escucha en el puerto `4200` y llama al backend bajo `/api`; no accede directamente a Firestore.
-
-## Proyecto de Firebase
-
-Para cargar datos fuera del emulador, configura `FIREBASE_PROJECT_ID` y `GOOGLE_APPLICATION_CREDENTIALS` para el proyecto correspondiente y ejecuta `npm run seed`. Verifica el proyecto de destino antes de hacerlo. Despliega las reglas y los índices con:
+Configura `FIREBASE_PROJECT_ID` y las credenciales mediante `GOOGLE_APPLICATION_CREDENTIALS` fuera del repositorio. Después ejecuta:
 
 ```sh
+npm run seed
 npm run deploy:firestore
 ```
 
-`firestore.indexes.json` no declara índices compuestos: no hay consultas compuestas especificadas en esta generación. Los índices de campo único los administra Firestore.
+Sustituye las direcciones de afiliación de ejemplo antes de operar. No incluyas credenciales en los scripts de carga.
+
+## Conexión con las otras capas
+
+El backend usa `FIREBASE_PROJECT_ID` y `FIRESTORE_EMULATOR_HOST` para conectarse a Firestore. En desarrollo, utiliza `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085`; el backend escucha en el puerto `8080`. El frontend escucha en el puerto `4200`, llama al backend bajo `/api` y no accede directamente a Firestore.
