@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "layer": "database",
-  "kind": "structure",
-  "generatedAt": "2026-11-27T13:09:50.415Z",
+  "kind": "features",
+  "generatedAt": "2026-11-27T13:14:16.683Z",
   "system": {
     "uid": "Ki3EmRCSLkGwM3Tnlji0",
     "name": "Credara · Comparador de préstamos online"
@@ -58,8 +58,61 @@
       ]
     }
   ],
-  "modules": [],
-  "shared": [],
+  "modules": [
+    {
+      "moduleName": "home",
+      "title": "Inicio con simulador y ofertas destacadas",
+      "featureKeys": [
+        "67edb12e-1b4f-4e83-865a-0d8b712487c1"
+      ],
+      "services": []
+    },
+    {
+      "moduleName": "loan-simulator",
+      "title": "Simulador avanzado de préstamos",
+      "featureKeys": [
+        "8f98d026-a93d-4a16-84ba-626054c8d919"
+      ],
+      "services": []
+    },
+    {
+      "moduleName": "loan-applications",
+      "title": "Solicitud de ofertas",
+      "featureKeys": [
+        "822a6f75-6c23-4e09-83ab-ad757c8118a9"
+      ],
+      "services": [],
+      "tables": [
+        "applications"
+      ]
+    },
+    {
+      "moduleName": "lenders",
+      "title": "Comparador de entidades",
+      "featureKeys": [
+        "a13a918c-de55-4974-8692-27eef72380bd"
+      ],
+      "services": []
+    },
+    {
+      "moduleName": "loan-types",
+      "title": "Tipos de préstamo",
+      "featureKeys": [
+        "98ad01a1-aa1d-4d92-8771-cacee72cd586"
+      ],
+      "services": [],
+      "tables": [
+        "loanTypes"
+      ]
+    }
+  ],
+  "shared": [
+    {
+      "path": "docs/collections/core.md",
+      "exportName": "lenders",
+      "kind": "collection"
+    }
+  ],
   "database": {
     "engine": "firestore",
     "containers": [],
@@ -68,14 +121,31 @@
       "FIRESTORE_EMULATOR_HOST",
       "GCLOUD_PROJECT"
     ],
-    "tables": [],
+    "tables": [
+      {
+        "name": "applications",
+        "moduleName": "loan-applications",
+        "columns": null
+      },
+      {
+        "name": "loanTypes",
+        "moduleName": "loan-types",
+        "columns": null
+      },
+      {
+        "name": "lenders",
+        "moduleName": "",
+        "columns": null
+      }
+    ],
     "firebase": {
       "projectId": "demo-app",
       "emulatorHost": "127.0.0.1:8085"
     }
   },
   "relations": [
-    "Backend: la base es firestore (en desarrollo, emulador en 127.0.0.1:8085, proyecto demo-app); conéctate con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST, GCLOUD_PROJECT."
+    "Backend: la base es firestore (en desarrollo, emulador en 127.0.0.1:8085, proyecto demo-app); conéctate con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST, GCLOUD_PROJECT.",
+    "Backend: usa EXACTAMENTE estas tablas y columnas (database.tables), sin crear el esquema desde el ORM: applications, loanTypes, lenders."
   ],
-  "readme": "# Credara · Base de datos Firestore\n\nBase Cloud Firestore en modo nativo. El sitio es público y no requiere cuentas. Las reglas impiden el acceso directo desde clientes; el backend accede mediante el SDK de administración.\n\n## Requisitos\n\n- Node.js 24 o superior.\n- Java para ejecutar el emulador de Firestore.\n\n## Desarrollo local\n\n```sh\nnpm install\nnpm run emulator\n```\n\nEl emulador escucha en `127.0.0.1:8085` y su panel está en el puerto `4005`. En otra terminal, cuando existan scripts de carga:\n\n```sh\nnpm run seed:emulator\n```\n\nLos scripts de `firestore/seeds` se aplican por orden de versión. El runner registra los ya aplicados para no repetirlos. Esta estructura inicial aún no contiene colecciones ni scripts de carga.\n\n## Proyecto real\n\nConfigura un proyecto de Firebase y las credenciales de una cuenta de servicio fuera del repositorio. Establece `GOOGLE_APPLICATION_CREDENTIALS` con la ruta de ese archivo y `FIREBASE_PROJECT_ID` con el identificador del proyecto. Después de generar los scripts de carga, ejecuta `npm run seed`. Para desplegar las reglas y los índices, ejecuta `npm run deploy:firestore` con el proyecto de Firebase seleccionado.\n\n## Archivos de esquema\n\n| Archivo | Contenido |\n|---|---|\n| `firestore.rules` | Acceso directo denegado para todas las colecciones. |\n| `firestore.indexes.json` | Sin índices compuestos hasta que los módulos definan consultas que los necesiten. |\n\nLa documentación de las colecciones y sus scripts versionados se incorporarán con los módulos.\n"
+  "readme": "# Credara · Base de datos\n\nCloud Firestore almacena los datos de Credara. El sitio es público y no requiere inicio de sesión. El frontend no accede directamente a Firestore: consulta la API, que utiliza el SDK de administración. Por eso las reglas de acceso directo permanecen cerradas.\n\n## Desarrollo local\n\nRequiere Node.js 24 o superior. Instala las dependencias e inicia el emulador de Firestore en una terminal:\n\n```sh\nnpm install\nnpm run emulator\n```\n\nEl emulador escucha en `127.0.0.1:8085` y su panel está disponible en el puerto `4005`. En otra terminal, carga los datos de ejemplo:\n\n```sh\nnpm run seed:emulator\n```\n\nEl runner aplica los scripts de `firestore/seeds` en orden de versión y registra los aplicados en `_seedHistory`. No modifiques un script ya aplicado; incorpora los cambios en una versión posterior. Para comprobar los scripts, ejecuta `npm run check`.\n\n## Colecciones y orden de carga\n\n| Versión | Script | Colecciones |\n|---|---|---|\n| 1 | `firestore/seeds/V1__core.js` | `lenders` (compartida) |\n| 4 | `firestore/seeds/V4__loan_applications.js` | `applications` |\n| 6 | `firestore/seeds/V6__loan_types.js` | `loanTypes` |\n\nInicio, simulador avanzado y comparador de entidades no crean colecciones propias. Los esquemas de las colecciones están en `docs/collections/`. `_seedHistory` es una colección técnica administrada por el runner. No hay índices compuestos definidos para las consultas actuales; Firestore crea automáticamente los índices de campo único.\n\n## Proyecto real\n\nConfigura `FIREBASE_PROJECT_ID` y las credenciales de servicio mediante `GOOGLE_APPLICATION_CREDENTIALS` fuera del repositorio. Sin `FIRESTORE_EMULATOR_HOST`, carga los scripts pendientes y despliega las reglas y los índices:\n\n```sh\nnpm run seed\nnpm run deploy:firestore\n```\n\nLos datos de ejemplo incluyen direcciones de afiliación bajo `example.com`; sustitúyelas por las acordadas con cada entidad antes de operar.\n\n## Conexión con las otras capas\n\nEl backend de este repositorio usa `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085` para conectarse al emulador; configura también `GCLOUD_PROJECT=demo-app` según su README. Conserva los nombres de esas variables al conectar la API a otro proyecto. El backend escucha en el puerto `8080` y expone `/api`; el frontend escucha en el puerto `4200` y dirige `/api` al backend mediante su proxy de desarrollo. El frontend nunca necesita credenciales de Firestore.\n"
 }
