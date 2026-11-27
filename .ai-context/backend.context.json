@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "layer": "backend",
-  "kind": "structure",
-  "generatedAt": "2026-11-27T13:10:34.826Z",
+  "kind": "features",
+  "generatedAt": "2026-11-27T13:52:30.966Z",
   "system": {
     "uid": "Ki3EmRCSLkGwM3Tnlji0",
     "name": "Credara · Comparador de préstamos online"
@@ -67,11 +67,118 @@
       ]
     }
   ],
-  "modules": [],
+  "modules": [
+    {
+      "moduleName": "lenders",
+      "title": "Comparador de entidades y ofertas destacadas",
+      "featureKeys": [
+        "a13a918c-de55-4974-8692-27eef72380bd",
+        "67edb12e-1b4f-4e83-865a-0d8b712487c1"
+      ],
+      "services": [
+        {
+          "method": "GET",
+          "path": "/api/lenders",
+          "name": "listLenders",
+          "description": "Devuelve las entidades activas filtradas por amount, termDays, age, firstLoanFree, acceptsAsnef y noPayslip; permite ordenar por recommended, total, maxAmount o response. Con featured=true ignora los demás filtros y devuelve hasta tres destacadas. No incluye affiliateUrl."
+        }
+      ]
+    },
+    {
+      "moduleName": "loan-applications",
+      "title": "Solicitud y presentación de ofertas",
+      "featureKeys": [
+        "822a6f75-6c23-4e09-83ab-ad757c8118a9"
+      ],
+      "services": [
+        {
+          "method": "POST",
+          "path": "/api/applications",
+          "name": "createApplication",
+          "description": "Valida el formulario y la cabecera Idempotency-Key, aplica el límite de cinco solicitudes nuevas por IP y hora, guarda la solicitud en applications con estado RECIBIDA y devuelve 201 con su id."
+        },
+        {
+          "method": "GET",
+          "path": "/api/applications/:id/offers",
+          "name": "getApplicationOffers",
+          "description": "Consulta las entidades aptas mediante el servicio lenders, calcula y ordena los totales, guarda las ofertas y el estado OFERTADA o SIN_OFERTAS, y devuelve las ofertas sin affiliateUrl; responde 404 si no existe la solicitud."
+        },
+        {
+          "method": "POST",
+          "path": "/api/applications/:id/clicks",
+          "name": "recordOfferClick",
+          "description": "Comprueba que la entidad figure entre las ofertas guardadas, registra cada clic en applications y solo entonces devuelve la URL de afiliación con los parámetros de seguimiento."
+        }
+      ]
+    },
+    {
+      "moduleName": "loan-types",
+      "title": "Tipos de préstamo",
+      "featureKeys": [
+        "98ad01a1-aa1d-4d92-8771-cacee72cd586"
+      ],
+      "services": [
+        {
+          "method": "GET",
+          "path": "/api/loan-types",
+          "name": "listLoanTypes",
+          "description": "Devuelve los tipos activos de loanTypes ordenados por order, con slug, title, icon y summary."
+        },
+        {
+          "method": "GET",
+          "path": "/api/loan-types/:slug",
+          "name": "getLoanType",
+          "description": "Devuelve el contenido completo del tipo activo, sus relacionados activos y las entidades activas que cumplen su criterio, sin affiliateUrl; responde 404 ante un slug inexistente o inactivo."
+        }
+      ]
+    }
+  ],
   "shared": [],
   "backend": {
     "basePath": "/api",
     "endpoints": [
+      {
+        "moduleName": "lenders",
+        "method": "GET",
+        "path": "/api/lenders",
+        "name": "listLenders",
+        "description": "Devuelve las entidades activas filtradas por amount, termDays, age, firstLoanFree, acceptsAsnef y noPayslip; permite ordenar por recommended, total, maxAmount o response. Con featured=true ignora los demás filtros y devuelve hasta tres destacadas. No incluye affiliateUrl."
+      },
+      {
+        "moduleName": "loan-applications",
+        "method": "POST",
+        "path": "/api/applications",
+        "name": "createApplication",
+        "description": "Valida el formulario y la cabecera Idempotency-Key, aplica el límite de cinco solicitudes nuevas por IP y hora, guarda la solicitud en applications con estado RECIBIDA y devuelve 201 con su id."
+      },
+      {
+        "moduleName": "loan-applications",
+        "method": "GET",
+        "path": "/api/applications/:id/offers",
+        "name": "getApplicationOffers",
+        "description": "Consulta las entidades aptas mediante el servicio lenders, calcula y ordena los totales, guarda las ofertas y el estado OFERTADA o SIN_OFERTAS, y devuelve las ofertas sin affiliateUrl; responde 404 si no existe la solicitud."
+      },
+      {
+        "moduleName": "loan-applications",
+        "method": "POST",
+        "path": "/api/applications/:id/clicks",
+        "name": "recordOfferClick",
+        "description": "Comprueba que la entidad figure entre las ofertas guardadas, registra cada clic en applications y solo entonces devuelve la URL de afiliación con los parámetros de seguimiento."
+      },
+      {
+        "moduleName": "loan-types",
+        "method": "GET",
+        "path": "/api/loan-types",
+        "name": "listLoanTypes",
+        "description": "Devuelve los tipos activos de loanTypes ordenados por order, con slug, title, icon y summary."
+      },
+      {
+        "moduleName": "loan-types",
+        "method": "GET",
+        "path": "/api/loan-types/:slug",
+        "name": "getLoanType",
+        "description": "Devuelve el contenido completo del tipo activo, sus relacionados activos y las entidades activas que cumplen su criterio, sin affiliateUrl; responde 404 ante un slug inexistente o inactivo."
+      },
       {
         "moduleName": "",
         "method": "GET",
@@ -83,6 +190,8 @@
     "authEndpoints": [],
     "entityTables": [],
     "corsEnvVars": [
+      "FIREBASE_PROJECT_ID",
+      "FIRESTORE_EMULATOR_HOST",
       "FRONT_URL"
     ],
     "databaseEnvVars": [
@@ -91,8 +200,8 @@
     ]
   },
   "relations": [
-    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 1 endpoints de backend.endpoints con el mismo method y path.",
-    "Frontend: el backend habilita CORS con las variables FRONT_URL; el origen del front tiene que estar ahí.",
+    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 7 endpoints de backend.endpoints con el mismo method y path.",
+    "Frontend: el backend habilita CORS con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST, FRONT_URL; el origen del front tiene que estar ahí.",
     "Base de datos: el backend se conecta con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST (mismos nombres en el .env.example de la base)."
   ],
   "readme": "# Credara · API\n\nAPI pública de Credara, desarrollada con Node.js 24, Express 5 y TypeScript. Esta estructura inicial no incluye módulos de negocio. El endpoint disponible es `GET /api/health`.\n\n## Desarrollo\n\nRequiere Node.js 24 o superior y la base Firestore de este repositorio. Sigue las instrucciones del `README.md` de la base para iniciar el emulador en `127.0.0.1:8085`. La API utiliza el proyecto `demo-app` en desarrollo.\n\n```sh\nnpm install\nnpm run dev\n```\n\nPara compilar y ejecutar:\n\n```sh\nnpm run build\nnpm start\n```\n\nLa API escucha en el puerto 8080 por defecto. Consulta `.env.example` para las variables admitidas por la configuración fija. Para conectarla al emulador, configura `FIREBASE_PROJECT_ID=demo-app`, `GCLOUD_PROJECT=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085`. Para usar Firestore fuera del emulador, configura las credenciales de servicio fuera del repositorio y el identificador del proyecto correspondiente.\n\nLos módulos y sus endpoints se incorporarán en generaciones posteriores. No se requiere inicio de sesión.\n"
